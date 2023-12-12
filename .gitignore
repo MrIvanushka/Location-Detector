@@ -1,0 +1,6 @@
+_BIN/
+_BUILD/
+_LIB/
+/_settings.cmake
+testEnvironment/main.cpp
+testEnvironment/Test.h
