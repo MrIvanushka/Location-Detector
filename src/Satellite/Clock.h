@@ -15,7 +15,7 @@ public:
 
 	Clock(double StartTime, double GloToMdv, double SatToGlo, double Gamma) : startTime(StartTime), gloToMdv(GloToMdv), satToGlo(SatToGlo), gamma(Gamma) {}
 
-	double scoreEthimeridicTime(double receiverTime, double delay) const
+	double ethimeridicTime(double receiverTime, double delay) const
 	{
 		double tj = receiverTime - delay;
 		double dt = gloToMdv + satToGlo - gamma * (tj - startTime);

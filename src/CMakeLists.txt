@@ -7,5 +7,9 @@ add_executable ( Location_Detector
 	Satellite/Estimator.h
 	Satellite/Clock.h
 	Satellite/Estimator.cpp
+	Slae/densematrix.h
+	Slae/overloads.h
+	RecorderSolver.cpp
+	RecorderSolver.h
                )
 

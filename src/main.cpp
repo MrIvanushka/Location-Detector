@@ -1,23 +1,25 @@
 #include<iostream>
 #include<map>
 
-#include "Satellite/Satellite.h"
+#include "RecorderSolver.h"
 
-typedef unsigned short SATELLITE_INDEX;
-typedef double PSEUDODELAY;
+std::ostream& operator<<(std::ostream& os, const Vector3& v) {
+	return os << '(' << std::setprecision(10) << v.x << "; " << std::setprecision(10) << v.y << "; " << std::setprecision(10) << v.z << ')';
+}
 
 int main()
 {
 	double estimationTime = 79103;
 	std::map<SATELLITE_INDEX, std::pair<Satellite*, PSEUDODELAY>> satellites;
-
+	RungeKutta* estimator = new RungeKutta(0.001);
+	
 	//SAT 14
 	Vector3 location(-16050.5732421875, 14867.69921875, 13161.53955078125);
 	Vector3 velocity(1.122589111328125, -1.430501937866211, 2.971652984619141);
 	Vector3 acceleration(-0.000000001862645, -0.000000000931323, 0);
 	Clock clock(78300, -0.189058483e-6, 12.51604408e-6, 0.909e-12);
 
-	satellites[14].first = new Satellite(location, velocity, acceleration, clock);
+	satellites[14].first = new Satellite(location, velocity, acceleration, clock, estimator);
 	satellites[14].second = 0.078468392917055;
 
 	//SAT 4
@@ -26,17 +28,17 @@ int main()
 	acceleration = Vector3(-0.000000001862645, -0.000000000931323, -0.000000000931323);
 	Clock clock4(78300, -0.000000189058483, -0.000042061321437, 0.909e-12);
 
-	satellites[4].first = new Satellite(location, velocity, acceleration, clock4);
+	satellites[4].first = new Satellite(location, velocity, acceleration, clock4, estimator);
 	satellites[4].second = 0.073241217768673;
 
-
+	
 	//SAT 5
 	location = Vector3(11406.8271484375, 10131.94384765625, 20440.77099609375);
 	velocity = Vector3(-2.795928955078125, -0.131600379943848, 1.625444412231445);
 	acceleration = Vector3(0, 0, -0.000000002793968);
 	Clock clock5(78300, -0.000000189058483, 0.000169168226421, 0);
 
-	satellites[5].first = new Satellite(location, velocity, acceleration, clock5);
+	satellites[5].first = new Satellite(location, velocity, acceleration, clock5, estimator);
 	satellites[5].second = 0.063959853789407;
 
 
@@ -46,7 +48,7 @@ int main()
 	acceleration = Vector3(0.000000000931323, 0.000000000931323, -0.000000001862645);
 	Clock clock6(78300, -0.000000189058483, -0.000032551586628, 0);
 
-	satellites[6].first = new Satellite(location, velocity, acceleration, clock6);
+	satellites[6].first = new Satellite(location, velocity, acceleration, clock6, estimator);
 	satellites[6].second = 0.070031111471884;
 
 	//SAT 13
@@ -55,7 +57,7 @@ int main()
 	acceleration = Vector3(-0.000000002793968, -0.000000000931323, -0.000000000931323);
 	Clock clock13(78300, -0.000000189058483, 0.000401012599468, 0.909e-12);
 
-	satellites[13].first = new Satellite(location, velocity, acceleration, clock13);
+	satellites[13].first = new Satellite(location, velocity, acceleration, clock13, estimator);
 	satellites[13].second = 0.076208527072563;
 
 	//SAT 19
@@ -64,7 +66,7 @@ int main()
 	acceleration = Vector3(0.000000001862645, 0, -0.000000001862645);
 	Clock clock19(78300, -0.000000189058483, 0.000065584667027, 0.909e-12);
 
-	satellites[19].first = new Satellite(location, velocity, acceleration, clock19);
+	satellites[19].first = new Satellite(location, velocity, acceleration, clock19, estimator);
 	satellites[19].second = 0.076981791669830;
 
 	//SAT 20
@@ -73,7 +75,7 @@ int main()
 	acceleration = Vector3(0, 0, -0.000000002793968);
 	Clock clock20(78300, -0.000000189058483, 0.000058603473008, 0.909e-12);
 
-	satellites[20].first = new Satellite(location, velocity, acceleration, clock20);
+	satellites[20].first = new Satellite(location, velocity, acceleration, clock20, estimator);
 	satellites[20].second = 0.065272271294675;
 
 	//SAT 21
@@ -82,35 +84,37 @@ int main()
 	acceleration = Vector3(0, 0, -0.000000001862645);
 	Clock clock21(78300, -0.000000189058483, 0.000008144415915, 0.909e-12);
 
-	satellites[21].first = new Satellite(location, velocity, acceleration, clock21);
+	satellites[21].first = new Satellite(location, velocity, acceleration, clock21, estimator);
 	satellites[21].second = 0.066006480269953;
 
 	//SAT 22
 	location = Vector3(-344.43994140625, -18270.123046875, 17727.150390625);
-	velocity = Vector3(1.049692153930664, 2.198596000671387, 0);
+	velocity = Vector3(1.049692153930664, 2.198596000671387, 2.299607276916504);
 	acceleration = Vector3(-0.000000001862645, 0, -0.000000000931323);
 	Clock clock22(78300, -0.000000189058483, -0.000092483125627, 0);
 
-	satellites[22].first = new Satellite(location, velocity, acceleration, clock22);
+	satellites[22].first = new Satellite(location, velocity, acceleration, clock22, estimator);
 	satellites[22].second = 0.078203448403038;
+
+	std::map<SATELLITE_INDEX, MotionParameters> satellitesParams;
+	Vector3 recorderPos = Recorder(satellites).estimateLocation(estimationTime, &satellitesParams);
 
 	std::cout << "===============SATELLITE COORDS================" << std::endl;
 
-	for (const auto& pair : satellites)
+	for (const auto& pair : satellitesParams)
 	{
 		SATELLITE_INDEX idx = pair.first;
-		Satellite* sat = pair.second.first;
-		PSEUDODELAY delay = pair.second.second;
-
-		MotionParameters mp = sat->getMotionParameters(estimationTime, delay);
+		MotionParameters mp = pair.second;
 
 		std::cout << "Satellite " << idx << std::endl;
 		std::cout << "	location: " << mp.location << std::endl;
 		std::cout << "	velocity: " << mp.velocity << std::endl;
 	}
 
+	std::cout << "===============RECORDER COORDS================" << std::endl;
+	std::cout << "	location: " << recorderPos << std::endl;
 
-
+	delete estimator;
 
 	for (auto satellite : satellites)
 		delete satellite.second.first;

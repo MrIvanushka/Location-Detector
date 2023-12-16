@@ -1,7 +1,9 @@
 ﻿#ifndef VECTOR_3_H
 #define VECTOR_3_H
+#pragma once
 
 #include <array>
+#include <iomanip>
 
 struct Vector3
 {
@@ -24,13 +26,20 @@ struct Vector3
 		return ret;
 	}
 
-	std::ostream& operator<<(std::ostream& os) {
-		return os << '(' << x << "; " << y << "; " << z << ')';
+	double magnitude() const
+	{
+		return sqrt(x*x + y*y + z*z);
+	}
+
+	Vector3 operator + (Vector3 a)
+	{
+		return Vector3(x + a.x, y + a.y, z + a.z);
+	}
+
+	Vector3 operator - (Vector3 a)
+	{
+		return Vector3(x - a.x, y - a.y, z - a.z);
 	}
 };
-
-std::ostream& operator<<(std::ostream& os, const Vector3& v) {
-	return os << '(' << v.x << "; " << v.y << "; " << v.z << ')';
-}
 
 #endif
