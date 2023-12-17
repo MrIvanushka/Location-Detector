@@ -18,7 +18,7 @@ public:
 
 	Recorder(std::map<SATELLITE_INDEX, std::pair<Satellite*, PSEUDODELAY>> satellites) : _satellites(satellites) {}
 
-	Vector3 estimateLocation(double estimationTime, std::map<SATELLITE_INDEX, MotionParameters>* retSatellitesParams = nullptr);
+	Vector3 estimateLocation(double estimationTime, double tolerance, std::map<SATELLITE_INDEX, MotionParameters>* retSatellitesParams = nullptr);
 };
 
 #endif

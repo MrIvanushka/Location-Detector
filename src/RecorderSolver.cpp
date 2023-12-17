@@ -4,7 +4,7 @@
 
 const double LIGHTSPEED = 299792.458;
 
-Vector3 Recorder::estimateLocation(double estimationTime, std::map<SATELLITE_INDEX, MotionParameters>* retSatellitesParams)
+Vector3 Recorder::estimateLocation(double estimationTime, double tolerance, std::map<SATELLITE_INDEX, MotionParameters>* retSatellitesParams)
 {
 	std::vector<MotionParameters> satellitesParams;
 
@@ -31,7 +31,6 @@ Vector3 Recorder::estimateLocation(double estimationTime, std::map<SATELLITE_IND
 		currentRow++;
 	}
 
-	double tolerance = 0.001;
 	Vector3 delta;
 	
 	do

@@ -97,7 +97,7 @@ int main()
 	satellites[22].second = 0.078203448403038;
 
 	std::map<SATELLITE_INDEX, MotionParameters> satellitesParams;
-	Vector3 recorderPos = Recorder(satellites).estimateLocation(estimationTime, &satellitesParams);
+	Vector3 recorderPos = Recorder(satellites).estimateLocation(estimationTime, 1e-10, &satellitesParams);
 
 	std::cout << "===============SATELLITE COORDS================" << std::endl;
 
@@ -112,7 +112,8 @@ int main()
 	}
 
 	std::cout << "===============RECORDER COORDS================" << std::endl;
-	std::cout << "	location: " << recorderPos << std::endl;
+	std::cout << "	rect system: " << recorderPos << std::endl;
+	std::cout << "	geodezic system: " << recorderPos.toGeodezic() << std::endl;
 
 	delete estimator;
 
